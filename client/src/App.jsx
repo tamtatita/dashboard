@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { publicRouter } from "./components/routes";
+import "./index.css";
 function App() {
   const [count, setCount] = useState(0);
 
