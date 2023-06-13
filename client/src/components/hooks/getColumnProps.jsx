@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 
-const useColumnSearch = (dataIndex) => {
+const useColumnSearch = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -17,7 +17,7 @@ const useColumnSearch = (dataIndex) => {
     setSearchText("");
   };
 
-    const getColumnSearchProps = {
+  const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -61,6 +61,7 @@ const useColumnSearch = (dataIndex) => {
             size="small"
             style={{
               width: 90,
+              backgroundColor: "yellow",
             }}
           >
             Reset
@@ -79,13 +80,14 @@ const useColumnSearch = (dataIndex) => {
             Filter
           </Button>
           <Button
-            type="link"
+            type="primary"
+            danger
             size="small"
             onClick={() => {
               close();
             }}
           >
-            close
+            Close
           </Button>
         </Space>
       </div>
@@ -118,15 +120,9 @@ const useColumnSearch = (dataIndex) => {
       ) : (
         text
       ),
-  };
+  });
 
-  return [
-    getColumnSearchProps,
-    searchText,
-    setSearchText,
-    searchedColumn,
-    setSearchedColumn,
-  ];
+  return [getColumnSearchProps];
 };
 
 export default useColumnSearch;
