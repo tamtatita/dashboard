@@ -2,6 +2,19 @@ import React from "react";
 import { RiBillLine } from "react-icons/ri";
 
 const TimeLine = ({ data }) => {
+  function formatOrderDate(orderDate) {
+    const date = new Date(orderDate);
+    const formattedDate = date.toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "UTC",
+    });
+    return formattedDate;
+  }
   return (
     <div className="">
       <h1 className="font-bold text-xl ">TimeLine Order</h1>
@@ -18,7 +31,7 @@ const TimeLine = ({ data }) => {
             </div>
             <div className="pb-8 ">
               <p className="mb-2 text-lg font-semibold text-gray-600">
-                {item.orderDate}
+                {formatOrderDate(item.orderDate)}
               </p>
               <h1 className="text-gray-700">
                 {`${item.contactLastName} ${item.contactFirstName}`}

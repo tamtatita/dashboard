@@ -27,10 +27,11 @@ import {
   Tooltip,
 } from "antd";
 
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BiMailSend } from "react-icons/bi";
-const { Header, Content, Sider } = Layout;
 
+const { Header, Content, Sider } = Layout;
+import { BsLightbulb } from "react-icons/bs";
 const HeaderComponent = () => {
   const [activeModelUser, setActiveModelUser] = useState(false);
 
@@ -43,6 +44,7 @@ const HeaderComponent = () => {
   };
 
   const btnHeader = [
+    
     {
       icon: NotificationOutlined,
       title: "Notification",
@@ -58,13 +60,14 @@ const HeaderComponent = () => {
       title: "Mail",
     },
   ];
+
   return (
-    <Layout className="w-full">
+    <Layout className="w-full bg-white">
       <Header
         style={{
           display: "flex",
           justifyContent: "space-between",
-          backgroundColor: "white",
+          backgroundColor: 'white'
         }}
       >
         <Space className="box_search ">
@@ -76,9 +79,12 @@ const HeaderComponent = () => {
           />
         </Space>
 
-        <div style={{display:'flex', alignItems: 'center', gap: '12px'}}>
+        <div
+          className=" "
+          style={{ display: "flex", alignItems: "center", gap: "12px" }}
+        >
           {btnHeader.map((item) => (
-            <Tooltip title={item.title}>
+            <Tooltip key={item.title} title={item.title}>
               {item.badge == true ? (
                 <Badge count={item.numberBadge}>
                   <Button icon={<item.icon />} />
@@ -143,7 +149,7 @@ const BoxUser = () => {
     getItem("History", "sub5", <HistoryOutlined />),
   ];
   return (
-    <div className="">
+    <div className=" bg-white">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <img
@@ -152,8 +158,14 @@ const BoxUser = () => {
             className="h-10 w-10 object-cover rounded-full"
           />
 
-          <div className="flex flex-col">
-            <h1 className="font-semibold text-md ">JWT User</h1>
+          <div className="flex flex-col ">
+            <h1
+              className="
+                  
+              font-semibold text-xl"
+            >
+              JWT User
+            </h1>
             <p className="text-gray-500 text-[13px]">Frontend Dev</p>
           </div>
         </div>
@@ -162,7 +174,7 @@ const BoxUser = () => {
       <Divider />
 
       {/* === TAPS === */}
-      <div className="w-full">
+      <div className="">
         <Tabs
           style={{
             width: "100%",

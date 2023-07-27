@@ -1,74 +1,40 @@
-import React from "react";
-import { Menu } from "antd";
-import {
-  MailOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { HomeOutlined, UserOutlined } from "@ant-design/icons";
+const MenuItem = ({ icon, name, link, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-// const items = [
-//   {
-//     label: "Navigation One",
-//     key: "mail",
-//     icon: <MailOutlined />,
-//   },
-//   {
-//     label: "Navigation Two",
-//     key: "app",
-//     icon: <AppstoreOutlined />,
-//     disabled: true,
-//   },
-//   {
-//     label: "Navigation Three - Submenu",
-//     key: "SubMenu",
-//     icon: <SettingOutlined />,
-//     children: [
-//       {
-//         type: "group",
-//         label: "Item 1",
-//         children: [
-//           {
-//             label: "Option 1",
-//             key: "setting:1",
-//           },
-//           {
-//             label: "Option 2",
-//             key: "setting:2",
-//           },
-//         ],
-//       },
-//       {
-//         type: "group",
-//         label: "Item 2",
-//         children: [
-//           {
-//             label: "Option 3",
-//             key: "setting:3",
-//           },
-//           {
-//             label: "Option 4",
-//             key: "setting:4",
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
 
-const MenuSideBar = () => {
   return (
-    <Menu>
-      <Menu.Item>item 1</Menu.Item>
-      <Menu.Item>item 2</Menu.Item>
-      <Menu.SubMenu title="sub menu">
-        <Menu.Item>item 3</Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
+    <div className="my-1 flex flex-col items-start hover:bg-slate-50">
+      <div
+        className="flex px-3 items-center py-3 gap-3  "
+        onClick={handleClick}
+      >
+        {icon && <i className="text-xl text-blue-500">{icon}</i>}
+        <Link to={link} className="text-blue-500 ">
+          {name}
+        </Link>
+      </div>
+      {isOpen && <ul className="pl-4 hover:bg-none bg-gray-100">{children}</ul>}
+    </div>
   );
 };
 
-// const CustomMenu = () => {
-//   return <Menu mode="inline">{items.map(renderMenuItem)}</Menu>;
-// };
+const MenuSideBar = () => {
+  return (
+    <div className="">
+      <MenuItem icon={<HomeOutlined />} name="Dashboard" link="/"></MenuItem>
+      <MenuItem
+        icon={<UserOutlined />}
+        name="Employee"
+        link="/employee"
+      ></MenuItem>
+    </div>
+  );
+};
 
 export default MenuSideBar;

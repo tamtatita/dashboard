@@ -5,10 +5,10 @@ const Statistics = () => {
   return (
     <div>
       <div className="flex w-full justify-between gap-6 ">
-        <FourBoxFirst title="Total Sum" value="4212" percent="42" data="1221" />
-        <FourBoxFirst title="Total Sum" value="9431" percent="90" data="1221" />
-        <FourBoxFirst title="Total Sum" value="9431" percent="12" data="1221" />
-        <FourBoxFirst title="Total Sum" value="9431" percent="69" data="1221" />
+        <FourBoxFirst title="Total Revenues" value="4212" percent="42" data="1221" />
+        <FourBoxFirst title="Total Customers" value="9431" percent="90" data="1221" />
+        <FourBoxFirst title="Total Orders" value="9431" percent="12" data="1221" />
+        
       </div>
     </div>
   );

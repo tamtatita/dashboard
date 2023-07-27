@@ -1,0 +1,12 @@
+GET http://localhost:8081/employees
+
+
+###
+
+POST http://localhost:8081/login
+Content-Type: application/json
+
+{
+    "lastName": "Bow",
+    "employeeNumber": "1143"
+}

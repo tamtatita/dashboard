@@ -1,72 +1,111 @@
 import {
-  DesktopOutlined,
-  FileOutlined,
+  UserAddOutlined,
+  UserOutlined,
   PieChartOutlined,
   TeamOutlined,
-  UserOutlined,
+  ShoppingCartOutlined,
+  HomeOutlined,
+  ProfileOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Breadcrumb, Layout, Menu } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Global } from "../Global";
 import DateTime from "../Global/DateTime";
-const { Header, Content, Footer, Sider } = Layout;
-function getItem(label, key, icon, link, children) {
+
+const { Content, Footer, Sider } = Layout;
+function getItem(label, key, icon, children, type, link) {
   return {
     key,
     icon,
-    link,
     children,
     label,
+    type,
+    link,
   };
 }
+
 const items = [
-  getItem("Dashboard", "1", "ss", <PieChartOutlined />),
-  getItem("Customers", "2", "", <DesktopOutlined />),
-  getItem("Employees", "sub1", "/", <UserOutlined />, [
-    getItem("Tom", "3", "/"),
-    getItem("Bill", "4", "/"),
-    getItem("Alex", "5", "/"),
-  ]),
-  getItem("Branch", "sub2", <TeamOutlined />, [
-    getItem("Team 1", "6"),
-    getItem("Team 2", "8"),
-  ]),
-  getItem("Files", "9", <FileOutlined />),
+  getItem("Dashboard", "/", <HomeOutlined />),
+  getItem("Employees", "/employee", <UserAddOutlined />),
+
+  getItem("Customers", "/customer", <UserOutlined />),
+
+  getItem("Orders", "/order", <ShoppingCartOutlined />),
+  getItem("Products", "/product", <ProfileOutlined />),
 ];
+
+const { SubMenu } = Menu;
+const renderMenuItems = (items) => {
+  return items.map((item) => {
+    if (item.type === "group") {
+      return (
+        <SubMenu key={item.key} title={item.label} icon={item.icon}>
+          {renderMenuItems(item.children)}
+        </SubMenu>
+      );
+    } else {
+      return (
+        <Menu.Item key={item.key} icon={item.icon}>
+          <a href={item.link}>{item.label}</a>
+        </Menu.Item>
+      );
+    }
+  });
+};
+
 const Default = ({ children }) => {
+  const navigate = useNavigate();
+
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Layout
       style={{
         minHeight: "100vh",
+        backgroundColor: "white",
       }}
     >
       <Sider
+        style={{
+          height: "100vh",
+          // overflowY: "scroll",
+          position: "fixed",
+          top: 0,
+          backgroundColor: "white",
+
+          zIndex: 100,
+        }}
         collapsible
-        theme="light"
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
         <span
-          className={`font-bold text-xl text-center w-full flex py-3 items-center justify-center ${
+          className={`font-bold bg-white text-xl text-center w-full flex py-3 items-center justify-center ${
             collapsed == true && "hidden"
           } `}
         >
           {" "}
           E-COMMERCE
         </span>
-        <Menu theme="light" defaultSelectedKeys={["1"]} mode="inline">
-          {items.map((item) => (
-            <Menu.Item key={item.key} icon={item.icon}>
-              <Link to={item.link}>{item.label}</Link>
-            </Menu.Item>
-          ))}
-        </Menu>
+        <Menu
+          onClick={({ key }) => {
+            navigate(key);
+          }}
+          defaultSelectedKeys={["1"]}
+          defaultOpenKeys={["sub1"]}
+          mode="inline"
+          // theme="light"
+          items={items}
+        />
       </Sider>
-      <Layout className="">
+      <Layout className="" style={{ marginLeft: collapsed ? "70px" : "200px" }}>
         <Global.HeaderComponent />
-        <Content style={{ padding: "20px", backgroundColor: "#EEEEEE" }}>
+        <Content
+          style={{
+            padding: "20px",
+          }}
+        >
           <DateTime />
           {children}
         </Content>

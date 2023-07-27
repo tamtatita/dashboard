@@ -5,13 +5,14 @@ import {
 } from "@ant-design/icons";
 
 import {
-  Badge,
+  Form,
+  InputNumber,
+  Radio,
+  Select,
   Button,
-  Dropdown,
   Input,
   Modal,
   PageHeader,
-  Select,
   Space,
   Table,
   Tag,
@@ -19,17 +20,44 @@ import {
 import Default from "../../DefaultLayout/Default";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API as url } from "../../../API";
+
 import TableComponent from "../../Global/TableComponent";
 import useColumnSearch from "../../hooks/getColumnProps";
+import { API as url } from "../../../API.js";
 
 const Employees = () => {
   const [dataEmployees, setDataEmployees] = useState([]);
   const [active, setActive] = useState({
+    btnAdd: false,
     edit: false,
     remove: false,
     index: 0,
   });
+  const [valueForm, setValueForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    extension: "",
+    jobTitle: "",
+    officeCode: "",
+  });
+  const handleChange = (event) => {
+    const { id, value } = event.target;
+    setValueForm((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+  const handleSelectChange = (value, name) => {
+    setValueForm((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const [componentSize, setComponentSize] = useState("default");
+  const onFormLayoutChange = ({ size }) => {
+    setComponentSize(size);
+  };
   const [unique, setUnique] = useState({ office: [], jobTitle: [] });
 
   const [getColumnSearchProps] = useColumnSearch();
@@ -58,15 +86,28 @@ const Employees = () => {
     }
   }, [dataEmployees]);
 
+  const handleAddEmp = () => {
+    setActive({
+      ...active,
+      btnAdd: true,
+    });
+  };
+  console.log(valueForm);
   const handleEdit = (id) => {
     setActive({ ...active, edit: true, remove: false, index: id });
   };
 
-  const handleRemove = (id) => {
+  const handleRemove = async (id) => {
     setActive({ ...active, edit: false, remove: true, index: id });
+    try {
+      const res = await axios.delete(`${url}/deleteEmpRouter/${id}`);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const hideModal = () => {
-    setActive({ ...active, edit: false, remove: false });
+    setActive({ ...active, btnAdd: false, edit: false, remove: false });
   };
 
   const UniqueValue = (array, propertyName) => {
@@ -106,7 +147,7 @@ const Employees = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      width: "10%",
+      width: "20%",
       ...getColumnSearchProps("email"),
     },
     {
@@ -122,14 +163,13 @@ const Employees = () => {
       dataIndex: "extension",
       key: "extension",
       width: "10%",
-
       ...getColumnSearchProps("extension"),
     },
     {
       title: "Job Title",
       dataIndex: "jobTitle",
       key: "jobTitle",
-      width: "10%",
+      width: "20%",
       ...getColumnSearchProps("jobTitle"),
       sorter: (a, b) => a.extension.length - b.extension.length,
       sortDirections: ["descend", "ascend"],
@@ -179,59 +219,213 @@ const Employees = () => {
     },
   ];
 
-  const configFormAdd = [
-    {
-      code: "employeeNumber",
-      name: "Employee Number",
-      type: "input",
-      disabled: true,
-    },
-    { code: "lastName", name: "Last Name", type: "input" },
-    { code: "firstName", name: "First Name", type: "input" },
-    { code: "extension", name: "Extension", type: "input" },
-    { code: "email", name: "Email", type: "input" },
-    {
-      code: "officeCode",
-      name: "Office Code",
-      type: "select",
-      render: true,
-      dataRender: { defaultValue: 1, data: unique.office, sort: "number" },
-    },
-    { code: "reportsTo", name: "Report To", type: "input" },
-    {
-      code: "jobTitle",
-      name: "Job Title",
-      type: "select",
-      render: true,
-      dataRender: { defaultValue: -1, data: unique.jobTitle, sort: "char" },
-    },
-  ];
+  const [form] = Form.useForm();
+  const [formErrors, setFormErrors] = useState({});
+
+  const AddAPI = async () => {
+    try {
+      await axios.post(`${url}/addemp`, valueForm);
+      console.log("Thành công gửi");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = (values, event) => {
+    // Kiểm tra các trường bắt buộc nếu rỗng
+    const errors = {};
+    if (!values.extension) {
+      errors.extension = "Extension is required!";
+    }
+    if (!values.firstName) {
+      errors.firstName = "firstName is required!";
+    }
+    if (!values.lastName) {
+      errors.lastName = "lastName is required!";
+    }
+
+    if (!values.officeCode) {
+      errors.officeCode = "officeCode is required!";
+    }
+    if (!values.jobTitle) {
+      errors.jobTitle = "Job Title is required!";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Nếu có lỗi, hiển thị thông báo lỗi và không gửi mẫu
+      setFormErrors(errors);
+    } else {
+      event.preventDefault();
+      // Xử lý dữ liệu form ở đây
+      AddAPI();
+    }
+  };
+
   return (
     <>
       <Default>
         <PageHeader title="Manager Employees" />
         <Space className="mb-4">
-          <Button icon={<PlusCircleOutlined />} type="primary" size="large">
+          <Button
+            icon={<PlusCircleOutlined />}
+            type="primary"
+            onClick={handleAddEmp}
+            size="large"
+          >
             Add Emp
           </Button>
         </Space>
-        <TableComponent dataSource={dataEmployees} columns={columnTable} />
+        <TableComponent
+          dataSource={dataEmployees}
+          scroll={{
+            y: 300,
+          }}
+          columns={columnTable}
+        />
 
-        {/* <ModalComponent
-          isAddNew={false}
-          config={configFormAdd}
+        {/* === FORM ADD EMPLOYEE ===  */}
+        <Modal
+          open={active.btnAdd}
           onCancel={hideModal}
-          onOK={hideModal}
-          title={"Edit Employee"}
-          IDNumber={"EmployeeNumber"}
-          IDIndex={active.index}
-          data={dataEmployees.length > 0 && dataEmployees}
-          visible={active.edit}
-        /> */}
+          title="Form Add Employee"
+        >
+          <Form
+            style={{ width: "100%" }}
+            labelCol={{
+              span: 4,
+            }}
+            wrapperCol={{
+              span: 14,
+            }}
+            layout="horizontal"
+            initialValues={{
+              size: componentSize,
+            }}
+            onValuesChange={onFormLayoutChange}
+            size={componentSize}
+          >
+            <Form.Item label="Form Size" name="size">
+              <Radio.Group>
+                <Radio.Button value="small">Small</Radio.Button>
+                <Radio.Button value="default">Default</Radio.Button>
+                <Radio.Button value="large">Large</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              label="First Name"
+              name="firstName"
+              validateStatus={formErrors.firstName ? "error" : ""}
+              help={formErrors.firstName}
+              hasFeedback
+              rules={[{ required: true, message: "First Name is required!" }]}
+            >
+              <Input
+                id="firstName"
+                value={valueForm.firstName}
+                onChange={handleChange}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Last Name"
+              name="lastName"
+              validateStatus={formErrors.lastName ? "error" : ""}
+              help={formErrors.lastName}
+              rules={[{ required: true, message: "Last Name is required!" }]}
+            >
+              <Input
+                id="lastName"
+                value={valueForm.lastName}
+                onChange={handleChange}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Email"
+              name="email"
+              validateStatus={formErrors.email ? "error" : ""}
+              help={formErrors.email}
+              rules={[{ required: true, message: "Email is required!" }]}
+            >
+              <Input
+                name="email"
+                value={valueForm.email}
+                onChange={handleChange}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Office Code"
+              name="officeCode"
+              validateStatus={formErrors.officeCode ? "error" : ""}
+              help={formErrors.officeCode}
+              rules={[{ required: true, message: "Office Code is required!" }]}
+            >
+              <Select
+                value={valueForm.officeCode}
+                onChange={(value) => handleSelectChange(value, "officeCode")}
+              >
+                {unique.office
+                  .sort((a, b) => a - b)
+                  .map((item) => (
+                    <Select.Option value={item} key={item}>
+                      {item}
+                    </Select.Option>
+                  ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Extension"
+              name="extension"
+              validateStatus={formErrors.extension ? "error" : ""}
+              help={formErrors.extension}
+              rules={[{ message: "Extension is required!" }]}
+            >
+              <Input
+                id="extension"
+                value={valueForm.extension}
+                onChange={handleChange}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Job Title"
+              name="jobTitle"
+              validateStatus={formErrors.jobTitle ? "error" : ""}
+              help={formErrors.jobTitle}
+              rules={[{ required: true, message: "Job Title is required!" }]}
+            >
+              <Select
+                name="jobTitle"
+                value={valueForm.jobTitle}
+                onChange={(value) => handleSelectChange(value, "jobTitle")}
+              >
+                {unique.jobTitle.map((item) =>
+                  item === "President" ? (
+                    <Select.Option disabled key={item}>
+                      {item}
+                    </Select.Option>
+                  ) : (
+                    <Select.Option value={item} key={item}>
+                      {item}
+                    </Select.Option>
+                  )
+                )}
+              </Select>
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
 
         <Modal
           title="Remove Employee"
-          visible={active.remove}
+          open={active.remove}
           onCancel={hideModal}
         >
           <h1 className="text-red-500 font-bold flex items-center gap-4">
@@ -244,76 +438,4 @@ const Employees = () => {
   );
 };
 
-// const ModalComponent = ({
-//   isAddNew,
-//   config,
-//   title,
-//   data,
-//   IDNumber,
-//   IDIndex,
-//   visible,
-//   onOK,
-//   onCancel,
-// }) => {
-//   return (
-//     <Modal title={title} visible={visible} onOk={onOK} onCancel={onCancel}>
-//       <div>
-//         <div className="h-[50vh] overflow-y-scroll">
-//           {data
-//             ?.filter((item) => item.IDNumber === IDIndex)
-//             .map((item) => (
-//               <div className="">
-//                 {config.map((field) => {
-//                   if (field.type == "input") {
-//                     return (
-//                       <div className={field.code}>
-//                         <Input
-//                           disabled={field.disabled}
-//                           value={item.field.code}
-//                         />
-//                       </div>
-//                     );
-//                   }
-//                 })}
-
-//                 <div className="">
-//                   <h1>Office Code</h1>
-//                   <Select
-//                     defaultValue={1}
-//                     style={{ width: "100%" }}
-//                     options={unique.office
-//                       .sort(function (a, b) {
-//                         return a - b;
-//                       })
-//                       .map((item) => ({
-//                         value: item,
-//                         label: item,
-//                       }))}
-//                   />
-//                 </div>
-
-//                 <div className="">
-//                   <h1>reportsTo</h1>
-//                   <Input value={item.reportsTo} />
-//                 </div>
-
-//                 <div className="">
-//                   <h1>Job</h1>
-//                   <Select
-//                     defaultValue={unique.jobTitle[-1]}
-//                     style={{ width: "100%" }}
-//                     options={unique.jobTitle.map((item) => ({
-//                       value: item === "President" ? item : item,
-//                       label: item,
-//                       disabled: item === "President" ? true : false,
-//                     }))}
-//                   />
-//                 </div>
-//               </div>
-//             ))}
-//         </div>
-//       </div>
-//     </Modal>
-//   );
-// };
 export default Employees;

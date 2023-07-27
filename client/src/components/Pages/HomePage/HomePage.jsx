@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import Default from "../../DefaultLayout/Default";
-import DateTime from "../../Global/DateTime";
-
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { HomePageBox } from ".";
-import { PageHeader, Space, Tag } from "antd";
+import { PageHeader, Button, Tag, Tooltip } from "antd";
 import useColumnSearch from "../../hooks/getColumnProps";
 import axios from "axios";
 import TableComponent from "../../Global/TableComponent";
 import TimeLine from "./TimeLine";
 import { API as url } from "../../../API";
+import BarChart from "./BarChart";
 
 const HomePage = () => {
   const [dataPayment, setDataPayment] = useState([]);
   const [dataTimeLine, setDataTimeLine] = useState([]);
   const [productLines, setProductLines] = useState([]);
+
+  const [dataRealTime, setDataRealTime] = useState([]);
+  const [displayedItems, setDisplayedItems] = useState(50);
+  const [dataBarChart, setDataBarChart] = useState([]);
   const [getColumnSearchProps] = useColumnSearch();
 
   const columnTable = [
@@ -85,6 +89,18 @@ const HomePage = () => {
     fetchAPI();
   }, []);
 
+  useEffect(() => {
+    const fetchAPI = async () => {
+      try {
+        const res = await axios.get(`${url}/realtime`);
+        setDataRealTime(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAPI();
+  }, []);
+
   // PRODUCTLINE
   useEffect(() => {
     const fetchAPI = async () => {
@@ -97,13 +113,24 @@ const HomePage = () => {
     };
     fetchAPI();
   }, []);
-  console.log(productLines);
 
   useEffect(() => {
     const fetchAPI = async () => {
       try {
         const res = await axios.get(`${url}/timeline`);
         setDataTimeLine(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAPI();
+  }, []);
+
+  useEffect(() => {
+    const fetchAPI = async () => {
+      try {
+        const res = await axios.get(`${url}/cusbuyorder`);
+        setDataBarChart(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -119,16 +146,29 @@ const HomePage = () => {
         <HomePageBox.Statistics />
 
         {/* === BIỂU ĐỒ REALTIME === */}
-        <div className="bg-white p-3 rounded-lg">
-          <h1>Dữ liệu giả miêu tả realtime</h1>
-          <HomePageBox.RealTimeChart />
+        <div
+          className="
+          bg-white p-3 rounded-lg w-full h-auto"
+        >
+          <div className="flex items-center gap-4">
+            <span>Biểu đồ Realtime việc đặt hàng</span>
+            <Tooltip
+              title="Biểu đồ realtime việc đặt hàng từ ngày 1/6/2003 -> 31/5/2005"
+              color="green"
+            >
+              <span>
+                <QuestionCircleOutlined />
+              </span>
+            </Tooltip>
+          </div>
+          {/* <HomePageBox.RealTimeChart /> */}
         </div>
 
         {/* === PRODUCT LINE ===  */}
-        <div className="w-full flex gap-4">
+        <div className=" w-full bg-white flex gap-4">
           {productLines.length > 0 && (
-            <div className="bg-white w-2/3 p-2 rounded-lg">
-              <h1 className="font-bold text-xl capitalize">
+            <div className=" w-2/3 p-2 rounded-lg">
+              <h1 className="font-bold bg-white text-xl capitalize">
                 Total orders by product line over years.
               </h1>
               <HomePageBox.ProductLinesChart
@@ -139,6 +179,17 @@ const HomePage = () => {
           <div className="bg-white w-1/3">
             <h1>Biểu đồ khác</h1>
           </div>
+        </div>
+
+        {/* BAR CHART */}
+        <div className="bg-white p-3 rounded-lg">
+          <h4 className="font-bold text-xl capitalize flex items-center gap-3 ">
+            Top 10 customers with the highest order count
+            <Tooltip color="green" title=" Clicking on each column item will display the details">
+              <QuestionCircleOutlined size={30} />
+            </Tooltip>
+          </h4>
+          <BarChart data={dataBarChart.length > 0 && dataBarChart} />
         </div>
 
         <div className="flex gap-4 items-center h-[60vh] ">
@@ -152,8 +203,11 @@ const HomePage = () => {
           </div>
 
           {/* === TIMELINE === */}
+
           <div className="w-1/3 rounded-lg h-full bg-white overflow-y-scroll p-4  ">
-            <TimeLine data={dataTimeLine.slice(0, 30)} />
+            {dataTimeLine.length > 0 && (
+              <TimeLine data={dataTimeLine?.slice(0, 30)} />
+            )}
           </div>
         </div>
       </div>

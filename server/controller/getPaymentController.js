@@ -8,3 +8,4 @@ export const getPaymentController = (req, res) => {
 };
 
 export default getPaymentController;
+        
