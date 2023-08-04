@@ -1,9 +1,8 @@
 import Express from "express";
 import jwt from "jsonwebtoken";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 
-
-dotenv.config()
+dotenv.config();
 const app = Express();
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -19,10 +18,18 @@ import getCusBuyOrderRouter from "./routers/getCusBuyOrderRouter.js";
 import addEmployeeRouter from "./routers/addEmployeeRouter.js";
 import getProductRouter from "./routers/getProductRouter.js";
 import getLoginRouter from "./routers/getLoginRouter.js";
-import deleteEmpRouter from './routers/deleteEmpRouter.js'
+import deleteEmpRouter from "./routers/deleteEmpRouter.js";
+import chartCountry from "./routers/chartCountry.js";
 // const cors = require("cors");
 // app.use(cors({ origin: "http://127.0.0.1:5173", optionsSuccessStatus: 200 }));
-app.use(cors());
+app.use(
+  cors({
+    // origin: 'http://103.173.254.194',
+    origin: "http://127.0.0.1:5173",
+
+    credentials: true,
+  })
+);
 
 app.use(Express.json());
 
@@ -30,7 +37,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://103.173.254.194');
+  // res.setHeader('Access-Control-Allow-Origin');
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
   res.setHeader(
@@ -41,22 +48,22 @@ app.use((req, res, next) => {
   next();
 });
 
+// const clientPath = path.join(__dirname, 'client');
+// app.use(Express.static(clientPath));
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
   next();
 });
 
 export const authenToken = (req, res, next) => {
-  const authorization = req.headers['authorization']
-  const token = authorization.split(" ")[1]
-  if(!token) res.sendStatus(401)
+  const authorization = req.headers["authorization"];
+  const token = authorization.split(" ")[1];
+  if (!token) res.sendStatus(401);
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
     console.log(err, data);
-  })
-}
-
-
-
+  });
+};
 
 app.use("/payment", getPaymentRouter);
 app.use("/timeline", getTimeLineRouter);
@@ -67,10 +74,11 @@ app.use("/orderdetail", getOrderDetailRouter);
 app.use("/realtime", getDataRealTimeRouter);
 app.use("/customer", getCustomerRouter);
 app.use("/cusbuyorder", getCusBuyOrderRouter);
-app.use("/addemp", addEmployeeRouter);
+app.use("/add/emp", addEmployeeRouter);
 app.use("/product", getProductRouter);
 app.use("/login", getLoginRouter);
-app.use('/deleteEmpRouter/:id', deleteEmpRouter)
+app.use("/delete/emp", deleteEmpRouter);
+app.use("/chart/country", chartCountry);
 app.listen(8081, () => {
   console.log("Working");
 });

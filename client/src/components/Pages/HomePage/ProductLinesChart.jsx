@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { Column } from "@ant-design/plots";
 
-const ProductLinesChart = ({ data }) => {
+const ProductLinesChart = ({ data, type }) => {
   const config = {
     data,
-    isGroup: true,
-    xField: "productLine",
-    yField: "Total",
-    seriesField: "year",
+    isGroup: type == "country" ? false : true,
+    xField: type == "country" ? "country" : "productLine",
+    yField: type == "country" ? "count" : "Total",
+    seriesField: type == "country" ? "count" : "year",
 
     /** 设置颜色 */
-    color: ["#33CCFF", "#FF3300"],
+    color: ["#CCFF66", "#47d2ff"],
 
     pattern: {
       padding: 3,

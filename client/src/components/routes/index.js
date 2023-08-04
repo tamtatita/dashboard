@@ -10,7 +10,7 @@ export const privateRouter = [
   { path: "/employee", component: Employees },
   { path: "/order", component: Orders },
   { path: "/customer", component: Customers },
-
+  { path: "/login", component: Login },
   { path: "/product", component: Products },
 ];
 

@@ -1,31 +1,42 @@
-import { Typography } from "antd";
+import { Space, Tag, Typography } from "antd";
 import React, { useEffect, useState } from "react";
+import useFormatDateTime from "../hooks/useFormatDateTime";
 
 const DateTime = () => {
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
+    // Tạo một interval để cập nhật thời gian mỗi phút
     const interval = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 60000); // Khoảng thời gian 1 phút (60000 milliseconds)
+      setCurrentTime(new Date());
+    }, 1000);
 
+    // Xóa interval khi component bị unmount
     return () => {
       clearInterval(interval);
     };
   }, []);
 
-  const year = currentDateTime.getFullYear();
-  const month = currentDateTime.getMonth() + 1;
-  const day = currentDateTime.getDate();
-  const hours = currentDateTime.getHours();
-  const minutes = currentDateTime.getMinutes();
+  // const formatTime = (date: any) => {
+  //   const options = {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //     hour: "numeric",
+  //     minute: "numeric",
+  //     hour12: false,
+
+  //   };
+  //   return date.toLocaleString(undefined, options);
+  // };
+  const formatDateTime = useFormatDateTime();
 
   return (
-    <div>
-      <Typography.Paragraph className=" text-lg text-gray-900 font-semibold">
-        {day}/{month}/{year} | {hours}:{minutes}{" "}
-      </Typography.Paragraph>
-    </div>
+    <Space>
+      <Tag color="lime" style={{fontSize:'24px', padding: '8px'}}>
+        {formatDateTime(currentTime)}
+      </Tag>
+    </Space>
   );
 };
 

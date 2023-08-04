@@ -151,7 +151,7 @@ const HomePage = () => {
           bg-white p-3 rounded-lg w-full h-auto"
         >
           <div className="flex items-center gap-4">
-            <span>Biểu đồ Realtime việc đặt hàng</span>
+            <span className="font-bold text-xl ">Order Realtime Chart</span>
             <Tooltip
               title="Biểu đồ realtime việc đặt hàng từ ngày 1/6/2003 -> 31/5/2005"
               color="green"
@@ -165,9 +165,9 @@ const HomePage = () => {
         </div>
 
         {/* === PRODUCT LINE ===  */}
-        <div className=" w-full bg-white flex gap-4">
+        <div className=" w-full justify-between flex flex-wrap gap-2 ">
           {productLines.length > 0 && (
-            <div className=" w-2/3 p-2 rounded-lg">
+            <div className=" lg:w-[49%] w-full p-2 bg-white rounded-lg">
               <h1 className="font-bold bg-white text-xl capitalize">
                 Total orders by product line over years.
               </h1>
@@ -176,8 +176,11 @@ const HomePage = () => {
               />
             </div>
           )}
-          <div className="bg-white w-1/3">
-            <h1>Biểu đồ khác</h1>
+          <div className="bg-white lg:w-[49%] w-full rounded-lg p-3">
+            <h1 className="font-bold text-xl capitalize flex items-center">
+              The most-purchased-nation chart.
+            </h1>
+            <HomePageBox.ChartCountry />
           </div>
         </div>
 
@@ -185,15 +188,18 @@ const HomePage = () => {
         <div className="bg-white p-3 rounded-lg">
           <h4 className="font-bold text-xl capitalize flex items-center gap-3 ">
             Top 10 customers with the highest order count
-            <Tooltip color="green" title=" Clicking on each column item will display the details">
+            <Tooltip
+              color="green"
+              title=" Clicking on each column item will display the details"
+            >
               <QuestionCircleOutlined size={30} />
             </Tooltip>
           </h4>
           <BarChart data={dataBarChart.length > 0 && dataBarChart} />
         </div>
 
-        <div className="flex gap-4 items-center h-[60vh] ">
-          <div className="w-2/3 rounded-lg h-full bg-white p-2 overflow-y-scroll">
+        <div className="flex flex-wrap gap-4 items-center h-[500px] ">
+          <div className="lg:w-[65%] w-full rounded-lg h-full bg-white p-2">
             <h1 className="font-bold text-xl">Recent Orders</h1>
             <TableComponent
               columns={columnTable}
@@ -204,7 +210,7 @@ const HomePage = () => {
 
           {/* === TIMELINE === */}
 
-          <div className="w-1/3 rounded-lg h-full bg-white overflow-y-scroll p-4  ">
+          <div className="lg:w-[32%] w-full rounded-lg h-full bg-white overflow-y-scroll p-4  ">
             {dataTimeLine.length > 0 && (
               <TimeLine data={dataTimeLine?.slice(0, 30)} />
             )}

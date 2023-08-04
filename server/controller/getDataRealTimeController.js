@@ -7,4 +7,13 @@ export const getDataRealTimeController = (req, res) => {
   });
 };
 
+export const chartCountry = (req, res) => {
+  const sql = `SELECT c.country, count(c.customerNumber) as count  FROM customers c GROUP by  c.country  
+  ORDER BY count(c.customerNumber) DESC LIMIT 10;`
+  db.query(sql, (err, data) => {
+    if(err) return res.json(err)
+    return res.json(data)
+  })
+}
+
 export default getDataRealTimeController;

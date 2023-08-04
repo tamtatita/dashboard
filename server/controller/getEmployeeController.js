@@ -7,10 +7,16 @@ export const getEmployeeController = (req, res) => {
   });
 };
 export const addEmployeeController = (req, res) => {
-  const { lastName, firstName, extension, email, officeCode, jobTitle } =
-    req.body;
-  const sql = `INSERT INTO employees (lastName, firstName, extension, email, officeCode, jobTitle) VALUES (?, ?, ?, ?, ?, ?)`;
-  const values = [lastName, firstName, extension, email, officeCode, jobTitle];
+  const sql = `INSERT INTO employees (employeeNumber, lastName, firstName, extension, email, officeCode, jobTitle) VALUES (?,?, ?, ?, ?, ?, ?)`;
+  const values = [
+    req.body.employeeNumber,
+    req.body.lastName,
+    req.body.firstName,
+    req.body.extension,
+    req.body.email,
+    req.body.officeCode,
+    req.body.jobTitle,
+  ];
 
   db.query(sql, values, (err, data) => {
     if (err) return res.json(err);
@@ -18,14 +24,11 @@ export const addEmployeeController = (req, res) => {
   });
 };
 
-
 export const deleteEmp = (req, res) => {
-  const id = req.params.id
-  
-  const sql = 'delete from employees where employeeNumber = ?'
-  // const values = [req.body.employeeNumber]
-  db.query(sql, [id], (err, data) => {
-    if(err) return res.json(err)
-    return res.json({message:"deleted"})
-  })
-}
+  const sql = "delete from employees where employeeNumber = ?";
+  const values = [req.body.employeeNumber];
+  db.query(sql, values, (err, data) => {
+    if (err) return res.json(err);
+    return res.json({ success: true, message: "deleted" });
+  });
+};

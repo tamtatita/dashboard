@@ -1,7 +1,7 @@
 import { Bar } from "@ant-design/plots";
 import { useState } from "react";
 
-const BarChart = ({ data }) => {
+const BarChart = ({ data, type }) => {
   
   const config = {
     data: data.length > 0 && data,

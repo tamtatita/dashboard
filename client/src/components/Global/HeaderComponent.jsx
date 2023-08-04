@@ -44,7 +44,6 @@ const HeaderComponent = () => {
   };
 
   const btnHeader = [
-    
     {
       icon: NotificationOutlined,
       title: "Notification",
@@ -67,14 +66,15 @@ const HeaderComponent = () => {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          backgroundColor: 'white'
+          backgroundColor: "white",
         }}
       >
-        <Space className="box_search ">
+        <Space className="box_search lg:hidden ">
           <Input
+          style={{boxShadow: '1px 2px 3px gray'}}
             size="large"
             prefix={<SearchOutlined />}
-            className=""
+            // className="lg:hidden"
             placeholder="Search"
           />
         </Space>
@@ -87,15 +87,22 @@ const HeaderComponent = () => {
             <Tooltip key={item.title} title={item.title}>
               {item.badge == true ? (
                 <Badge count={item.numberBadge}>
-                  <Button icon={<item.icon />} />
+                  <Button
+                    style={{ boxShadow: "1px 2px 3px gray" }}
+                    icon={<item.icon />}
+                  />
                 </Badge>
               ) : (
-                <Button icon={<item.icon />} />
+                <Button
+                  style={{ boxShadow: "1px 2px 3px gray" }}
+                  icon={<item.icon />}
+                />
               )}
             </Tooltip>
           ))}
 
           <Button
+            style={{ boxShadow: "1px 2px 3px gray" }}
             onClick={() => setActiveModelUser(true)}
             shape="default"
             className=""

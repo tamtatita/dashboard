@@ -16,6 +16,8 @@ import {
   Space,
   Table,
   Tag,
+  message,
+  Popconfirm,
 } from "antd";
 import Default from "../../DefaultLayout/Default";
 import { useEffect, useState } from "react";
@@ -58,6 +60,18 @@ const Employees = () => {
   const onFormLayoutChange = ({ size }) => {
     setComponentSize(size);
   };
+
+  const confirm = async (e, id) => {
+    console.log("id", id);
+    try {
+      const res = await axios.delete(`${url}/delete/emp`, id)
+      console.log(res);
+      if (res.data.success) message.success("Deleted employee successfully ");
+      else message.error("There was an error deleting the employee");
+    } catch (error) {
+      message.error("There was an error deleting the employee");
+    }
+  };
   const [unique, setUnique] = useState({ office: [], jobTitle: [] });
 
   const [getColumnSearchProps] = useColumnSearch();
@@ -97,15 +111,7 @@ const Employees = () => {
     setActive({ ...active, edit: true, remove: false, index: id });
   };
 
-  const handleRemove = async (id) => {
-    setActive({ ...active, edit: false, remove: true, index: id });
-    try {
-      const res = await axios.delete(`${url}/deleteEmpRouter/${id}`);
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ 
   const hideModal = () => {
     setActive({ ...active, btnAdd: false, edit: false, remove: false });
   };
@@ -207,13 +213,21 @@ const Employees = () => {
             onClick={() => handleEdit(record.employeeNumber)}
             style={{ backgroundColor: "yellow", border: "none" }}
           />
-
-          <Button
-            onClick={() => handleRemove(record.employeeNumber)}
-            icon={<DeleteOutlined />}
-            type="primary"
-            danger
-          />
+          <Popconfirm
+            title="Delete employee"
+            description="Are you sure to delete this employee ?"
+            onConfirm={() => confirm(_, record.employeeNumber)}
+            // onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              // onClick={() => handleRemove(record.employeeNumber)}
+              icon={<DeleteOutlined />}
+              type="primary"
+              danger
+            />
+          </Popconfirm>
         </Space>
       ),
     },
@@ -222,43 +236,31 @@ const Employees = () => {
   const [form] = Form.useForm();
   const [formErrors, setFormErrors] = useState({});
 
-  const AddAPI = async () => {
-    try {
-      await axios.post(`${url}/addemp`, valueForm);
-      console.log("Thành công gửi");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const AddAPI = async () => {};
 
-  const handleSubmit = (values, event) => {
+  const handleSubmit = async (values, event) => {
     // Kiểm tra các trường bắt buộc nếu rỗng
-    const errors = {};
-    if (!values.extension) {
-      errors.extension = "Extension is required!";
-    }
-    if (!values.firstName) {
-      errors.firstName = "firstName is required!";
-    }
-    if (!values.lastName) {
-      errors.lastName = "lastName is required!";
-    }
+    // const errors = {};
+    // if (!values.extension) {
+    //   errors.extension = "Extension is required!";
+    // }
+    // if (!values.firstName) {
+    //   errors.firstName = "firstName is required!";
+    // }
+    // if (!values.lastName) {
+    //   errors.lastName = "lastName is required!";
+    // }
 
-    if (!values.officeCode) {
-      errors.officeCode = "officeCode is required!";
-    }
-    if (!values.jobTitle) {
-      errors.jobTitle = "Job Title is required!";
-    }
+    // if (!values.officeCode) {
+    //   errors.officeCode = "officeCode is required!";
+    // }
+    // if (!values.jobTitle) {
+    //   errors.jobTitle = "Job Title is required!";
+    // }
 
-    if (Object.keys(errors).length > 0) {
-      // Nếu có lỗi, hiển thị thông báo lỗi và không gửi mẫu
-      setFormErrors(errors);
-    } else {
-      event.preventDefault();
-      // Xử lý dữ liệu form ở đây
-      AddAPI();
-    }
+    // event.preventDefault();
+    // Xử lý dữ liệu form ở đây
+    await AddAPI();
   };
 
   return (

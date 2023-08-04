@@ -14,9 +14,9 @@ export const db = mysql.createConnection({
 // });
 db.connect((err) => {
   if (err) {
-    console.error('Lỗi kết nối đến cơ sở dữ liệu:', err);
+    console.error("Lỗi kết nối đến cơ sở dữ liệu:", err);
     // setTimeout(connectDatabase, 2000); // Kết nối lại sau 2 giây
   } else {
-    console.log('Đã kết nối đến cơ sở dữ liệu');
+    console.log("Đã kết nối đến cơ sở dữ liệu");
   }
-}); 
+});

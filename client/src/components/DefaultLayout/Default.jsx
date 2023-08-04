@@ -109,13 +109,13 @@ const Default = ({ children }) => {
           <DateTime />
           {children}
         </Content>
-        <Footer
+        {/* <Footer
           style={{
             textAlign: "center",
           }}
         >
           @Copyright
-        </Footer>
+        </Footer> */}
       </Layout>
     </Layout>
   );
